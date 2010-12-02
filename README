@@ -1,0 +1,53 @@
+===============================================================================
+cs2510 Project 1: Distributed Mutual Exclusion, readers/writers problem
+
+Yann Le Gall
+Lindsey Bieda
+
+Assigned: 	Oct. 24, 2010
+Due: 		Nov. 15, 2010
+===============================================================================
+
+
+0. Table of Contents
+-------------------------------------------------------------------------------
+	0. Table of Contents
+	1. Files
+	2. Compiling
+	3. Running
+
+
+1. Files
+-------------------------------------------------------------------------------
+The following files should be present:
+
+	input.json
+	lib/
+		json_simple-1.1.jar
+	make.bat
+	makefile
+	README.txt
+	report.pdf
+	src/
+		cs2510/
+			Main.java
+			Message.java
+			Request.java
+			Server.java
+			stats.java
+
+2. Compiling
+-------------------------------------------------------------------------------
+We provide both a makefile and a windows batch file to make compilation easy.
+Simply type "make" to compile the source files.
+
+
+3. Running
+-------------------------------------------------------------------------------
+We provide both a makefile and a windows batch file to make program execution
+easy. Simply type "make run" to run the program. The program searches for a
+file named "input.json".
+
+* to run the centralized algorithm, type "make centralized"
+* to run the distributed algorithm, type "make distributed"
+
