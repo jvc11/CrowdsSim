@@ -7,7 +7,7 @@ MAIN = Main
 CP = lib/*:$(CLASSPATH)
 DEBUGFLAGS = -ea
 RUNFLAGS =
-ARGS = input.json distributed
+#ARGS = input.json distributed
 #ARGS = input.json centralized
 
 #=============================
@@ -25,14 +25,6 @@ run: build
 
 debug:
 	java -cp bin:$(CP) $(DEBUGFLAGS) cs2510.$(MAIN) $(ARGS)
-
-# target to run the centralized simulation
-centralized: build
-	java -cp bin:$(CP) $(RUNFLAGS) cs2510.$(MAIN) input.json centralized
-	
-# target to run the distributed simulation
-distributed: build
-	java -cp bin:$(CP) $(RUNFLAGS) cs2510.$(MAIN) input.json distributed
 
 report:
 	pdflatex report.tex
