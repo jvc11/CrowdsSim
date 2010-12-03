@@ -1,0 +1,24 @@
+
+# Compiled source #
+###################
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages #
+############
+*.gz
+*.jar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+output.txt
+
+# swap files #
+##############
+*.swp
