@@ -1,0 +1,146 @@
+
+\documentclass[12pt]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% PREAMBLE
+
+\title{CS2510 Project Proposal:
+An Analysis of Distributed Crowds}
+
+\author{
+		Lindsey Bieda \\
+        Yann Le Gall \\
+		Joe Cavanaugh \\
+		University of Pittsburgh \\ 
+        Department of Computer Science \\
+}
+\date{\today}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%---------------------------- packages
+\usepackage[pdftex]{graphicx}
+%\usepackage{graphicx}
+%---------------------------- packages
+
+\begin{document}
+
+\maketitle
+
+
+\section{Introduction}
+
+We propose to create a simulation of \emph{Crowds}, which is a distributed
+system that provides anonymity on the web. This system was proposed by
+Michael K. Reiter and Aviel D. Rubin of AT\&T Research Labs in 1998 \cite{reiter}.
+
+\subsection{Overview of Crowds}
+In crowds, clients form a group, called a crowd. Crowd members are called
+ \emph{jondos}, which is a play on \emph{John Doe}. When a jondo wishes to
+make a web request to a particular server, the jondo either contacts
+the server directly, or forwards the request to another jondo with
+some probability. Likewise, when a crowd member receives a request from
+another jondo, it either sends the request to the server or forwards it
+to another jondo. As a result, random paths are
+established. From the perspective of the server, the request could
+have originated from any one of the crowd members. The response from the
+server then travels in the reverse direction along the path.
+
+A central node called the \emph{blender} manages the several aspects of
+the system. The blender admits a group of new jondos to the crowd in a
+batch, establishes random paths, and distributes other necessary
+meta-data.
+
+\subsection{Weaknesses}
+The authors point out several potential issues with Crowds:
+
+\begin{itemize}
+	\item There is a tradeoff between performance and degree of privacy
+	against collaborating jondos. Anonymity depends on the path
+	path length, which depends on the probability of forwarding
+	requests, but an increase in path length will increase the latency
+	of web requests.
+	\item Crowds provide implicit load balancing: as more clients
+	join the crowd, the increased number of requests is spread out
+	across more client machines. However, there is still only a single
+	blender that is liable to become a bottleneck.
+	\item SSL and client scripting pose obstacles to having the last node
+	pre-fetch any embedded web requests.
+	\item Firewalls may prevent communication between certain clients
+	and servers.
+	\item Crowds do not address denial of service, global eavesdroppers,
+	and sender-receiver linkability.
+\end{itemize}
+
+\section{Project Goal}
+
+The goal of this project is to analyze the tradeoffs between response time
+and privacy for jondos. The identity of a jondo has the potential to be
+discovered by malicious jodnos; several malicious jondos might collaborate
+with each other in order to determine the originator of a message.
+
+However this threat can be mitigated by increasing the number of legitimate
+jondos in the crowd and by increasing the average length of forwarding
+paths (which is controlled by the probability of forwarding, $p_f$).
+Unfortunately, these measures increase the average response time of web
+requests. With longer paths, the web requests must travel further to
+reach their destination. Furthermore, a larger number of jondos increases the load on
+the blender, especially at times when paths are established and routing
+information is updated.
+
+\section{Design and Implementation}
+
+\subsection{Assumptions}
+
+We will make several assumptions to accommodate the limited
+time constraints and scope of this project.
+
+\begin{itemize}
+	\item The Crowds protocol calls for symmetric key encryption between
+	jondos, but our simulation will not implement encrpytion and decryption.
+	\item We will assume a reliable network. Specifically, we will not
+	focus on lost or altered messages.
+	\item Jondos do not crash. That is, the departure of a jondo is always
+	announced.
+	\item Finally, we will assume that the blender is always available.
+	In other words, we will not consider the possibility that the blender
+	crashes.
+\end{itemize}
+
+\section{Evaluation}
+
+In this section we propose several metrics by which we will evaluate
+and compare the tradeoffs between anonymity and response time.
+
+To measure the anonymity of a jondo, Reiter and Rubin define 
+a term called \emph{probable innocence}. From the attacker's point of
+view, a jondo has probable innocence if the probability that she is the
+originator of a request is less than or equal to the probability that
+she is not the originator of a request. In short, a jondo is probably
+innocent if there is smaller than $\frac{1}{2}$ chance that it is the
+originator of some request.
+
+Reiter and Rubin show that the originating jondo has probable innocence
+against $c$ collaborators if
+\[
+	n \ge \frac{p_f}{p_f - \frac{1}{2}}(c+1)
+\]
+
+where $n$ is the total number of nodes in the crowd, and $p_f$ is
+the probability of forwarding a request. Note that protection against
+malicious jondos depends on the size of the crowd and the length of
+the path. Thus, in our simulation we will analyze how changes in these
+parameters influence the average response time of requests from jondos.
+
+
+\begin{thebibliography}{9}
+
+	\bibitem{reiter}
+	  Reiter, Michael and Rubin, Aviel.
+	  \emph{Crowds: Anonymity for Web Transactions}.
+	  ACM Transactions on Information and System Security.
+	  Vol. 1, No. 1, 1998.
+
+\end{thebibliography}
+
+
+\end{document}
+
