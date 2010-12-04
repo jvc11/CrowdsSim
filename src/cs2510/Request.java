@@ -7,18 +7,27 @@ package cs2510;
  * ylegall@gmail.com
  */
 public class Request {
-	int ID;
-	int prev;
-	int next;
+	int GUID;
+	int pathID;
+	
 	int serverID;
+	int from;
 	long timestamp;
+	boolean isReply;
 
-	public Request(int ID, int prev, int next, int serverID) {
-		this.ID = ID;
-		this.prev = prev;
-		this.next = next;
+	public Request(int GUID, int pathID, int from, int serverID) {
+		this.GUID = GUID;
+		this.pathID = pathID;
+		this.from = from;
 		this.serverID = serverID;
 	}
 
-
+	public String toString() {
+		return new StringBuilder("request{")
+				.append("ID=").append(GUID).append(", ")
+				.append("pathID=").append(pathID).append(", ")
+				.append("server=").append(serverID).append(", ")
+				.append("reply=").append(isReply).append('}')
+				.toString();
+	}
 }

@@ -22,6 +22,7 @@ public class Main {
 	private static int clock;
 
 	private static int SEED;
+//	private static final int SLEEP = 200;
 	static Random random;
 	private static int IDcounter;
 	
@@ -32,7 +33,7 @@ public class Main {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 
 		loadConfiguration("config.properties");
 
@@ -44,13 +45,13 @@ public class Main {
 	/**
 	 * 
 	 */
-	private static void runSimulation() {
+	private static void runSimulation() throws Exception {
 
 		clock = 0;
 		random = new Random(SEED);
 		blender = new Blender();
+
 		servers = new Server[numServers];
-		
 		for (int i=0; i < numServers; i++) {
 			servers[i] = new Server(i);
 		}
@@ -62,21 +63,33 @@ public class Main {
 
 		// initialize paths
 		blender.shufflePaths();
-		System.exit(0);
 
 		// main loop
 		while (clock < totalDuration) {
 
-			// simulate requests
+			// TODO: this needs to be fixed so that requests
+			// do not travel multiple hops in one time unit.
+			// this can be done with multiple requestQueues for
+			// each jondo
+
+			// simulate new requests
 			for (Jondo jondo : jondos) {
 				jondo.initiateRequest(random);
 			}
 
 			// simulate forwarding
+			for (Jondo jondo : jondos) {
+				jondo.forwardRequests();
+			}
 
 			// simulate server responding
-			
+			for (Server s : servers) {
+				s.processRequests();
+			}
+
 			clock++;
+//			Thread.sleep(SLEEP);
+			System.out.println(clock);
 		}
 	}
 
@@ -110,7 +123,7 @@ public class Main {
 		try {
 			out = new PrintWriter(new FileWriter("output.txt"));
 
-			out.println("== CrowdSim Statistics ==");
+			out.println("=== CrowdSim Statistics ===");
 			out.println(Calendar.getInstance().getTime());
 			out.println();
 
