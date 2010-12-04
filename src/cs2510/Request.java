@@ -11,4 +11,14 @@ public class Request {
 	int prev;
 	int next;
 	int serverID;
+	long timestamp;
+
+	public Request(int ID, int prev, int next, int serverID) {
+		this.ID = ID;
+		this.prev = prev;
+		this.next = next;
+		this.serverID = serverID;
+	}
+
+
 }

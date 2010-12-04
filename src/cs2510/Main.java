@@ -23,10 +23,11 @@ public class Main {
 
 	private static int SEED;
 	static Random random;
+	private static int IDcounter;
 	
-	private static Server[] servers;
-	private static Jondo[] jondos;
-	private static Blender blender;
+	static Server[] servers;
+	static Jondo[] jondos;
+	static Blender blender;
 
 	/**
 	 * @param args
@@ -49,15 +50,27 @@ public class Main {
 		random = new Random(SEED);
 		blender = new Blender();
 		servers = new Server[numServers];
+		
+		for (int i=0; i < numServers; i++) {
+			servers[i] = new Server(i);
+		}
+
 		jondos = new Jondo[numJondos];
+		for (int i=0; i < numJondos; i++) {
+			jondos[i] = new Jondo(i);
+		}
 
 		// initialize paths
 		blender.shufflePaths();
+		System.exit(0);
 
 		// main loop
 		while (clock < totalDuration) {
 
 			// simulate requests
+			for (Jondo jondo : jondos) {
+				jondo.initiateRequest(random);
+			}
 
 			// simulate forwarding
 
@@ -65,6 +78,10 @@ public class Main {
 			
 			clock++;
 		}
+	}
+
+	static int getUniqueID() {
+		return ++IDcounter;
 	}
 
 	/**
