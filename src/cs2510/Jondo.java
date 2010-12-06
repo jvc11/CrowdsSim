@@ -9,10 +9,9 @@ import java.util.*;
 public class Jondo implements Runnable {
 
 	public static final int PATH_END = -1;
-	public static final int INVALID_ID = -2;
+	public static final int PATH_NONE = -2;
 	
 	public boolean malicious;
-	public long localClock;
 	private long responseTime;
 	private long requestCount;
 	private double PIH1plus;
@@ -31,7 +30,6 @@ public class Jondo implements Runnable {
 
 	public Jondo(int ID) {
 		this.ID = ID;
-		this.localClock = 0;
 		this.responseTime = 0;
 		this.requestCount = 0;
 		this.PIH1plus = 0;
@@ -40,7 +38,6 @@ public class Jondo implements Runnable {
 	
 	public Jondo(int ID, boolean mal) {
 		this.ID = ID;
-		this.localClock = 0;
 		this.responseTime = 0;
 		this.requestCount = 0;
 		this.PIH1plus = 0;
@@ -63,9 +60,9 @@ public class Jondo implements Runnable {
 					ID,
 					ID,
 					random.nextInt(Main.numServers),
-					localClock);
+					Main.clock
+				);
 			requestQueue.add(request);
-			requestCount++;
 		}
 	}
 
@@ -91,16 +88,20 @@ public class Jondo implements Runnable {
 			// check if the request going out or coming back
 			if (request.isReply) {
 
-				// check if this our message or
+				// check if this is our message or
 				// pass the response to the next node:
 				if (request.pathID == ID) {
 					// TODO: record response time... DONE
-					responseTime += (localClock - request.timestamp);
+					requestCount++;
+					responseTime += (Main.clock - request.timestamp);
 					PIH1plus += request.numForwards;
 				} else {
 					Main.jondos[responseTable[request.pathID]].submitRequest(request);
 				}
+
 			} else {
+				
+				// request is going out:
 				request.numForwards++;
 				int next = routingTable[request.pathID];
 				request.from = ID;
@@ -112,19 +113,16 @@ public class Jondo implements Runnable {
 			}
 		}
 	}
-	
-	public double getAvgRespTime()
-	{
-		return ((double)responseTime)/((double)requestCount);
+
+	public double getAvgRespTime() {
+		return ((double) responseTime) / ((double) requestCount);
 	}
-	
-	public double getAvgPIH1plus()
-	{
-		return (PIH1plus - (Main.probForward*(PIH1plus - Main.numAttackers - 1)))/(PIH1plus);
+
+	public double getAvgPIH1plus() {
+		return (PIH1plus - (Main.probForward * (PIH1plus - Main.numAttackers - 1))) / (PIH1plus);
 	}
-	
+
 	public String toString() {
 		return "Jondo " + ID + " avg response time: " + getAvgRespTime() + " P(I|H1+) = " + getAvgPIH1plus();
 	}
-	
 }
