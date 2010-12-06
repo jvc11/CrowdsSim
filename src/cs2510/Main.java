@@ -5,9 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Calendar;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
 
 /**
  */
@@ -19,6 +17,8 @@ public class Main {
 	static int numAttackers;
 	static int numServers;
 	static int totalDuration;
+	static int shuffleInterval;
+	static double avgRespTime;
 	private static int clock;
 
 	private static int SEED;
@@ -26,16 +26,22 @@ public class Main {
 	static Random random;
 	private static int IDcounter;
 	
-	static Server[] servers;
-	static Jondo[] jondos;
-	static Blender blender;
+	public static Server[] servers;
+	public static Jondo[] jondos;
+	public static Blender blender;
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-
-		loadConfiguration("config.properties");
+		String configFile = "";
+		for(int i = 0; i < args.length; i++) 
+			if(args[i].equals("-c"))
+				if(args.length > (i+1))
+					configFile = args[i+1];
+		if(configFile == "") configFile = "config.properties";
+					
+		loadConfiguration(configFile);
 
 		runSimulation();
 
@@ -73,24 +79,41 @@ public class Main {
 			// each jondo
 
 			// simulate new requests
-			for (Jondo jondo : jondos) {
+			//Iterator<Jondo> jit = jondos.iterator();
+			for(Jondo jondo : jondos) {
 				jondo.initiateRequest(random);
+				jondo.localClock = clock;
 			}
 
 			// simulate forwarding
-			for (Jondo jondo : jondos) {
+			//jit = jondos.iterator();
+			for(Jondo jondo : jondos) {
 				jondo.forwardRequests();
 			}
 
 			// simulate server responding
-			for (Server s : servers) {
-				s.processRequests();
+			//Iterator<Server> sit = servers.iterator();
+			for(Server server : servers) {
+				server.processRequests();
+				server.localClock = clock;
+			}
+			
+			if(clock%shuffleInterval == 0)
+			{
+				System.out.println("Blender Shuffling");
+				//blender.shufflePaths();
 			}
 
 			clock++;
 //			Thread.sleep(SLEEP);
 			System.out.println(clock);
 		}
+		avgRespTime = 0;
+		for(Jondo jondo : jondos) {
+				System.out.println(jondo);
+				avgRespTime += jondo.getAvgRespTime();
+		}
+		avgRespTime /= ((double)numJondos);
 	}
 
 	static int getUniqueID() {
@@ -110,6 +133,7 @@ public class Main {
 		numAttackers = Integer.parseInt(p.getProperty("numAttackers"));
 		numServers = Integer.parseInt(p.getProperty("numServers"));
 		totalDuration = Integer.parseInt(p.getProperty("totalDuration"));
+		shuffleInterval = Integer.parseInt(p.getProperty("shuffleInterval"));
 		SEED = Integer.parseInt(p.getProperty("rand.seed"));
 		probForward = Double.parseDouble(p.getProperty("probForward"));
 		probRequest = Double.parseDouble(p.getProperty("probRequest"));
@@ -125,6 +149,7 @@ public class Main {
 
 			out.println("=== CrowdSim Statistics ===");
 			out.println(Calendar.getInstance().getTime());
+			out.println("Avg response time: " + avgRespTime);
 			out.println();
 
 		} catch (IOException ioe) {

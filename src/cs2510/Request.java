@@ -15,11 +15,12 @@ public class Request {
 	long timestamp;
 	boolean isReply;
 
-	public Request(int GUID, int pathID, int from, int serverID) {
+	public Request(int GUID, int pathID, int from, int serverID, long tsp) {
 		this.GUID = GUID;
 		this.pathID = pathID;
 		this.from = from;
 		this.serverID = serverID;
+		this.timestamp = tsp;
 	}
 
 	public String toString() {
@@ -27,7 +28,8 @@ public class Request {
 				.append("ID=").append(GUID).append(", ")
 				.append("pathID=").append(pathID).append(", ")
 				.append("server=").append(serverID).append(", ")
-				.append("reply=").append(isReply).append('}')
+				.append("reply=").append(isReply).append(" timestamp= ")
+				.append(timestamp).append('}')
 				.toString();
 	}
 }

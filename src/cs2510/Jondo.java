@@ -1,9 +1,7 @@
 
 package cs2510;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 
 /**
  *
@@ -12,6 +10,11 @@ public class Jondo implements Runnable {
 
 	public static final int PATH_END = -1;
 	public static final int INVALID_ID = -2;
+	
+	public boolean malicious;
+	public long localClock;
+	private long responseTime;
+	private long requestCount;
 
 	int ID;	// same as the pathID for simplicity
 
@@ -27,7 +30,19 @@ public class Jondo implements Runnable {
 
 	public Jondo(int ID) {
 		this.ID = ID;
+		this.localClock = 0;
+		this.responseTime = 0;
+		this.requestCount = 0;
 		requestQueue = new LinkedList<Request>();
+	}
+	
+	public Jondo(int ID, boolean mal) {
+		this.ID = ID;
+		this.localClock = 0;
+		this.responseTime = 0;
+		this.requestCount = 0;
+		requestQueue = new LinkedList<Request>();
+		malicious = mal;
 	}
 
 	public void run() {
@@ -44,8 +59,10 @@ public class Jondo implements Runnable {
 					Main.getUniqueID(),
 					ID,
 					ID,
-					random.nextInt(Main.numServers));
+					random.nextInt(Main.numServers),
+					localClock);
 			requestQueue.add(request);
+			requestCount++;
 		}
 	}
 
@@ -75,6 +92,7 @@ public class Jondo implements Runnable {
 				// pass the response to the next node:
 				if (request.pathID == ID) {
 					// TODO: record response time
+					responseTime += (localClock - request.timestamp);
 				} else {
 					Main.jondos[responseTable[request.pathID]].submitRequest(request);
 				}
@@ -89,6 +107,15 @@ public class Jondo implements Runnable {
 				}
 			}
 		}
+	}
+	
+	public double getAvgRespTime()
+	{
+		return ((double)responseTime)/((double)requestCount);
+	}
+	
+	public String toString() {
+		return "Jondo " + ID + " avg response time: " + (((double)responseTime)/((double)requestCount));
 	}
 	
 }

@@ -4,13 +4,11 @@ package cs2510;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  */
-public class Blender {
+public class Blender{
 
 	private Random random;
 	private Map<Integer, List<Integer>> pathMap;
