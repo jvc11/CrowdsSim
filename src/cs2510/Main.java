@@ -40,7 +40,7 @@ public class Main {
 				if(args.length > (i+1))
 					configFile = args[i+1];
 		if(configFile == "") configFile = "config.properties";
-					
+		shuffleInterval = 1000;		
 		loadConfiguration(configFile);
 
 		runSimulation();
@@ -133,7 +133,7 @@ public class Main {
 		numAttackers = Integer.parseInt(p.getProperty("numAttackers"));
 		numServers = Integer.parseInt(p.getProperty("numServers"));
 		totalDuration = Integer.parseInt(p.getProperty("totalDuration"));
-		shuffleInterval = Integer.parseInt(p.getProperty("shuffleInterval"));
+		//shuffleInterval = Integer.parseInt(p.getProperty("shuffleInterval"));
 		SEED = Integer.parseInt(p.getProperty("rand.seed"));
 		probForward = Double.parseDouble(p.getProperty("probForward"));
 		probRequest = Double.parseDouble(p.getProperty("probRequest"));
