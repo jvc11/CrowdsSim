@@ -16,7 +16,7 @@ public class Blender{
 	}
 
 	/**
-	 * 
+	 * creates new random paths for each jondo in the crowd.
 	 */
 	void shufflePaths() {
 
@@ -76,7 +76,8 @@ public class Blender{
 	}
 
 	/**
-	 * 
+	 * prints out all of the paths and
+	 * all of the forward and reverse routing tables
 	 */
 	private void DEBUG() {
 		System.out.println(pathMap);

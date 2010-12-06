@@ -23,7 +23,6 @@ public class Main {
 	static int maxSimulationTime;
 	static long totalDuration;
 
-
 	private static int SEED;
 //	private static final int SLEEP = 200;
 	static Random random;
@@ -117,8 +116,8 @@ public class Main {
 	private static double getAvgRespTime() {
 		avgRespTime = 0;
 		for(Jondo jondo : jondos) {
-				System.out.println(jondo);	// DEBUG
-				avgRespTime += jondo.getAvgRespTime();
+			System.out.println(jondo);	// DEBUG
+			avgRespTime += jondo.getAvgRespTime();
 		}
 		avgRespTime /= ((double)numJondos);
 		return avgRespTime;
