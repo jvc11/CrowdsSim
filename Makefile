@@ -23,7 +23,7 @@ build:
 run: build
 	java -cp bin:$(CP) $(RUNFLAGS) cs2510.$(MAIN) $(ARGS)
 
-debug:
+debug: build
 	java -cp bin:$(CP) $(DEBUGFLAGS) cs2510.$(MAIN) $(ARGS)
 
 report:
