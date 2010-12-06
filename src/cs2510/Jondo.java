@@ -1,9 +1,7 @@
 
 package cs2510;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 
 /**
  *
@@ -11,7 +9,12 @@ import java.util.Random;
 public class Jondo implements Runnable {
 
 	public static final int PATH_END = -1;
-	public static final int INVALID_ID = -2;
+	public static final int PATH_NONE = -2;
+	
+	public boolean malicious;
+	private long responseTime;
+	private long requestCount;
+	private double PIH1plus;
 
 	int ID;	// same as the pathID for simplicity
 
@@ -27,7 +30,19 @@ public class Jondo implements Runnable {
 
 	public Jondo(int ID) {
 		this.ID = ID;
+		this.responseTime = 0;
+		this.requestCount = 0;
+		this.PIH1plus = 0;
 		requestQueue = new LinkedList<Request>();
+	}
+	
+	public Jondo(int ID, boolean mal) {
+		this.ID = ID;
+		this.responseTime = 0;
+		this.requestCount = 0;
+		this.PIH1plus = 0;
+		requestQueue = new LinkedList<Request>();
+		malicious = mal;
 	}
 
 	public void run() {
@@ -44,7 +59,9 @@ public class Jondo implements Runnable {
 					Main.getUniqueID(),
 					ID,
 					ID,
-					random.nextInt(Main.numServers));
+					random.nextInt(Main.numServers),
+					Main.clock
+				);
 			requestQueue.add(request);
 		}
 	}
@@ -71,15 +88,21 @@ public class Jondo implements Runnable {
 			// check if the request going out or coming back
 			if (request.isReply) {
 
-				// check if this our message or
+				// check if this is our message or
 				// pass the response to the next node:
 				if (request.pathID == ID) {
-					// TODO: record response time
+					// TODO: record response time... DONE
+					requestCount++;
+					responseTime += (Main.clock - request.timestamp);
+					PIH1plus += request.numForwards;
 				} else {
 					Main.jondos[responseTable[request.pathID]].submitRequest(request);
 				}
-			} else {
 
+			} else {
+				
+				// request is going out:
+				request.numForwards++;
 				int next = routingTable[request.pathID];
 				request.from = ID;
 				if (next == PATH_END) {
@@ -90,5 +113,16 @@ public class Jondo implements Runnable {
 			}
 		}
 	}
-	
+
+	public double getAvgRespTime() {
+		return ((double) responseTime) / ((double) requestCount);
+	}
+
+	public double getAvgPIH1plus() {
+		return (PIH1plus - (Main.probForward * (PIH1plus - Main.numAttackers - 1))) / (PIH1plus);
+	}
+
+	public String toString() {
+		return "Jondo " + ID + " avg response time: " + getAvgRespTime() + " P(I|H1+) = " + getAvgPIH1plus();
+	}
 }

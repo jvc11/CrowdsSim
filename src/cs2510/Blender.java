@@ -1,16 +1,11 @@
 
 package cs2510;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  */
-public class Blender {
+public class Blender{
 
 	private Random random;
 	private Map<Integer, List<Integer>> pathMap;
@@ -31,8 +26,8 @@ public class Blender {
 			pathMap.put(i, getRandomPath(i));
 			Main.jondos[i].routingTable = new int[Main.numJondos];
 			Main.jondos[i].responseTable = new int[Main.numJondos];
-			Arrays.fill(Main.jondos[i].routingTable, Jondo.INVALID_ID);
-			Arrays.fill(Main.jondos[i].responseTable, Jondo.INVALID_ID);
+			Arrays.fill(Main.jondos[i].routingTable, Jondo.PATH_NONE);
+			Arrays.fill(Main.jondos[i].responseTable, Jondo.PATH_NONE);
 		}
 
 		// iterate through the paths and set values
