@@ -12,9 +12,9 @@ public class Jondo implements Runnable {
 	public static final int PATH_NONE = -2;
 	
 	public boolean malicious;
-	private long responseTime;
+	long responseTime;
+	int maxResponseTime;
 	private long requestCount;
-	private double PIH1plus;
 
 	int ID;	// same as the pathID for simplicity
 
@@ -32,7 +32,6 @@ public class Jondo implements Runnable {
 		this.ID = ID;
 		this.responseTime = 0;
 		this.requestCount = 0;
-		this.PIH1plus = 0;
 		requestQueue = new LinkedList<Request>();
 	}
 	
@@ -40,7 +39,6 @@ public class Jondo implements Runnable {
 		this.ID = ID;
 		this.responseTime = 0;
 		this.requestCount = 0;
-		this.PIH1plus = 0;
 		requestQueue = new LinkedList<Request>();
 		malicious = mal;
 	}
@@ -93,8 +91,14 @@ public class Jondo implements Runnable {
 				if (request.pathID == ID) {
 					// TODO: record response time... DONE
 					requestCount++;
-					responseTime += (Main.clock - request.timestamp);
-					PIH1plus += request.numForwards;
+
+					// record the max forwards
+					if (request.numForwards > maxResponseTime) {
+						maxResponseTime = request.numForwards;
+					}
+					
+//					responseTime += (Main.clock - request.timestamp);
+					responseTime += (request.numForwards);
 				} else {
 					Main.jondos[responseTable[request.pathID]].submitRequest(request);
 				}
@@ -118,11 +122,7 @@ public class Jondo implements Runnable {
 		return ((double) responseTime) / ((double) requestCount);
 	}
 
-	public double getAvgPIH1plus() {
-		return (PIH1plus - (Main.probForward * (PIH1plus - Main.numAttackers - 1))) / (PIH1plus);
-	}
-
 	public String toString() {
-		return "Jondo " + ID + " avg response time: " + getAvgRespTime() + " P(I|H1+) = " + getAvgPIH1plus();
+		return "Jondo " + ID + " avg response time: " + getAvgRespTime() + "\n";
 	}
 }

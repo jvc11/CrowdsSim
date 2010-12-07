@@ -8,7 +8,6 @@ import java.util.*;
 public class Server implements Runnable{
 
 	int ID;
-	public long localClock;
 	private Queue<Request> requestQueue;
 
 	public Server(int ID) {

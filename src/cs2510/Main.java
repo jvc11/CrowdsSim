@@ -95,13 +95,12 @@ public class Main {
 			// simulate server responding
 			for(Server server : servers) {
 				server.processRequests();
-				server.localClock = clock;
 			}
 			
-			if(clock%shuffleInterval == 0) {
-				System.out.println("Blender Shuffling");
-				//blender.shufflePaths();
-			}
+//			if(clock%shuffleInterval == 0) {
+//				System.out.println("Blender Shuffling");
+//				//blender.shufflePaths();
+//			}
 
 			clock++;
 //			Thread.sleep(SLEEP);
@@ -121,6 +120,26 @@ public class Main {
 		}
 		avgRespTime /= ((double)numJondos);
 		return avgRespTime;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private static int getMaxResponseTime() {
+		int max = Main.jondos[0].maxResponseTime;
+		for (Jondo j : Main.jondos) {
+			max = (j.maxResponseTime > max)? j.maxResponseTime : max;
+		}
+		return max;
+	}
+
+	/**
+	 * calculates the probable innocence. more positive is better.
+	 * @return
+	 */
+	static double probableInnocence() {
+		return numJondos - (((probForward)/(probForward - 0.5d))*(numAttackers + 1));
 	}
 
 	/**
@@ -159,8 +178,14 @@ public class Main {
 
 			out.println("=== CrowdSim Statistics ===");
 			out.println(Calendar.getInstance().getTime());
-			out.println("Avg response time: " + avgRespTime);
 			out.println("total duration: " + totalDuration);
+			out.println("crowd size: " + numJondos);
+			out.println("number of attackers: " + numAttackers);
+
+			out.println("Avg response time: " + getAvgRespTime());
+			out.println("max response time: " + getMaxResponseTime());
+			out.println("probable innocence: " + probableInnocence());
+			
 			out.println();
 
 		} catch (IOException ioe) {
