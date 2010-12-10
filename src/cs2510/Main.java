@@ -74,8 +74,10 @@ public class Main {
 		blender.shufflePaths();
 		totalDuration = System.currentTimeMillis();
 
+		
+		boolean done = false;
 		// main loop
-		while (clock < maxSimulationTime) {
+		while(!done)  {
 
 			// TODO: this needs to be fixed so that requests
 			// do not travel multiple hops in one time unit.
@@ -83,18 +85,26 @@ public class Main {
 			// each jondo
 
 			// simulate new requests
-			for(Jondo jondo : jondos) {
-				jondo.initiateRequest(random);
+			if(clock < maxSimulationTime) {
+				for(Jondo jondo : jondos) {
+					jondo.initiateRequest(random);
+				}
+			}
+			else
+			{
+				done = true;
 			}
 
 			// simulate forwarding
 			for(Jondo jondo : jondos) {
 				jondo.forwardRequests();
+				done &= jondo.isDone();
 			}
 
 			// simulate server responding
 			for(Server server : servers) {
 				server.processRequests();
+				done &= server.isDone();
 			}
 			
 //			if(clock%shuffleInterval == 0) {
@@ -121,15 +131,32 @@ public class Main {
 		avgRespTime /= ((double)numJondos);
 		return avgRespTime;
 	}
+	
+	private static double getAvgFwdCount() {
+		double avgFwdCnt = 0;
+		for(Jondo jondo : jondos) {
+			System.out.println(jondo);	// DEBUG
+			avgFwdCnt += jondo.getAvgForwardCount();
+		}
+		avgFwdCnt /= ((double)numJondos);
+		return avgFwdCnt;
+	}
 
 	/**
 	 * 
 	 * @return
 	 */
-	private static int getMaxResponseTime() {
-		int max = Main.jondos[0].maxResponseTime;
+	private static long getMaxResponseTime() {
+		long max = Main.jondos[0].maxResponseTime;
 		for (Jondo j : Main.jondos) {
 			max = (j.maxResponseTime > max)? j.maxResponseTime : max;
+		}
+		return max;
+	}
+	private static long getMaxFwdCnt() {
+		long max = Main.jondos[0].maxForwards;
+		for (Jondo j : Main.jondos) {
+			max = (j.maxForwards > max)? j.maxForwards : max;
 		}
 		return max;
 	}
@@ -184,6 +211,8 @@ public class Main {
 
 			out.println("Avg response time: " + getAvgRespTime());
 			out.println("max response time: " + getMaxResponseTime());
+			out.println("Avg forward count: " + getAvgFwdCount());
+			out.println("max forward count: " + getMaxFwdCnt());
 			out.println("probable innocence: " + probableInnocence());
 			
 			out.println();

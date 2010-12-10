@@ -13,7 +13,9 @@ public class Jondo implements Runnable {
 	
 	public boolean malicious;
 	long responseTime;
-	int maxResponseTime;
+	long forwardTotal;
+	long maxResponseTime;
+	long maxForwards;
 	private long requestCount;
 
 	int ID;	// same as the pathID for simplicity
@@ -45,6 +47,10 @@ public class Jondo implements Runnable {
 
 	public void run() {
 		
+	}
+	
+	public boolean isDone() {
+		return (requestQueue.size() == 0);
 	}
 
 	/**
@@ -78,7 +84,7 @@ public class Jondo implements Runnable {
 	 */
 	void forwardRequests() {
 
-		while (!requestQueue.isEmpty()) {
+		if(!requestQueue.isEmpty()) {
 			Request request = requestQueue.poll();
 
 			System.out.println("jondo " + ID + ": " + request);
@@ -92,13 +98,16 @@ public class Jondo implements Runnable {
 					// TODO: record response time... DONE
 					requestCount++;
 
+					responseTime += (Main.clock - request.timestamp);
+					forwardTotal += (request.numForwards);
 					// record the max forwards
-					if (request.numForwards > maxResponseTime) {
-						maxResponseTime = request.numForwards;
+					if (request.numForwards > maxForwards) {
+						maxForwards = request.numForwards;
+					}
+					if ((Main.clock - request.timestamp) > maxResponseTime) {
+						maxResponseTime = (Main.clock - request.timestamp);
 					}
 					
-//					responseTime += (Main.clock - request.timestamp);
-					responseTime += (request.numForwards);
 				} else {
 					Main.jondos[responseTable[request.pathID]].submitRequest(request);
 				}
@@ -120,6 +129,10 @@ public class Jondo implements Runnable {
 
 	public double getAvgRespTime() {
 		return ((double) responseTime) / ((double) requestCount);
+	}
+	
+	public double getAvgForwardCount() {
+		return ((double)forwardTotal)/((double) requestCount);
 	}
 
 	public String toString() {

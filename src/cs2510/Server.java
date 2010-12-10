@@ -19,12 +19,16 @@ public class Server implements Runnable{
 	public void run() {
 		
 	}
+	
+	public boolean isDone() {
+		return (requestQueue.size() == 0);
+	}
 
 	/**
 	 * 
 	 */
 	void processRequests() {
-		while (!requestQueue.isEmpty()) {
+		if(!requestQueue.isEmpty()) {
 			Request r = requestQueue.poll();
 			System.out.println("server " + ID + ": " + r);
 			r.isReply = true;
